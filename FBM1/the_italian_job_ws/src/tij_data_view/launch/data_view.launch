@@ -1,0 +1,26 @@
+<launch>
+
+  <param name="/use_sim_time" value="true" />
+
+  <arg name="dataset" default="FBM1_flight1.bag" />
+  <arg name="loop" default="false" />
+
+  <include file="$(find tij_data_view)/launch/metrics_sensors_transformations.launch" />
+
+  <include file="$(find tij_data_view)/launch/rviz.launch">
+    <arg name="rviz_config" value="$(find tij_data_view)/config/config.rviz" />
+  </include>
+
+  <arg if="$(eval loop==false)" name="loop_args" value="--loop" />
+
+  <node name="rosbag_replayer" pkg="rosbag" type="play" respawn="false" args="--clock $(arg loop_args) $(find tij_data_view)/../../../dataset/$(arg dataset)" output="screen"></node>
+
+  <node pkg="nodelet" type="nodelet" name="nodelet_manager" args="manager" />
+
+  <node pkg="nodelet" type="nodelet" name="cloudify_depth_image" args="load depth_image_proc/point_cloud_xyz nodelet_manager" output="screen">
+    <remap from="points" to="/camera/points" />
+    <remap from="image_rect" to="/camera/depth/image_rect_raw" />
+    <remap from="camera_info" to="/camera/depth/camera_info" />
+  </node>
+
+</launch>
