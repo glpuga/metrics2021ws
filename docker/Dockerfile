@@ -250,11 +250,18 @@ USER $USER:$GROUP
 
 RUN rosdep update
 
+# Download the openvslam vocabulary
+RUN /bin/sh -c 'mkdir -p ~/data/' \
+ && cd ~/data/ \
+ && curl -sL "https://github.com/OpenVSLAM-Community/FBoW_orb_vocab/raw/main/orb_vocab.fbow" -o orb_vocab.fbow
+
 # Create a file exchange folder
 RUN /bin/sh -c 'mkdir -p ~/fileio'
 
 RUN /bin/sh -c 'touch ~/.bashrc'
 RUN /bin/sh -c 'echo "set-option -g default-shell /bin/bash" >> ~/.tmux.conf'
+RUN /bin/sh -c 'echo "export LD_LIBRARY_PATH=\"\$LD_LIBRARY_PATH\":/usr/local/lib" >> ~/.bashrc'
+
 
 WORKDIR /home/$USER
 

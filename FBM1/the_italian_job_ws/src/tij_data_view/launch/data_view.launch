@@ -46,4 +46,15 @@
     <remap from="depth_registered/image_rect" to="/camera/depth_registered/image_rect_raw" />
   </node>
 
+  <!-- OpenVSLAM -->
+  <node pkg="openvslam_ros" type="run_slam" name="openvslam"
+        args="-v /home/metrics/data/orb_vocab.fbow -c $(find tij_data_view)/config/metrics2021_rgbd.yaml"
+        output="screen">
+    <remap from="camera/color/image_raw" to="/camera/color/rectified" />
+    <remap from="camera/depth/image_raw" to="/camera/depth_registered/image_rect_raw" />
+    <param name="odom_frame" value="odom" />
+    <param name="map_frame"  value="vicon" />
+    <param name="publish_tf" value="true" />
+  </node>
+
 </launch>

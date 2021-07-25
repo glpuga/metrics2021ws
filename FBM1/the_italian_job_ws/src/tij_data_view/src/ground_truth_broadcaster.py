@@ -3,6 +3,7 @@ import rospy
 
 import tf
 from geometry_msgs.msg import PoseStamped
+from nav_msgs.msg import Odometry
 
 
 class GroundTruthTransformPublisher(object):
@@ -10,10 +11,15 @@ class GroundTruthTransformPublisher(object):
         # transform broadcaster
         self._tf_broadcaster = tf.TransformBroadcaster()
 
+        # Odometry publisher, for the benefit being able to show
+        # the trace in RVIZ
+        self._odometry_pub = rospy.Publisher(
+            "/vicon_client/METRICS/ideal_odom", Odometry, queue_size=20)
+
         # subscriber
         self._pose_sub = rospy.Subscriber('/vicon_client/METRICS/pose',
                                           PoseStamped,
-                                          self._pose_callback)
+                                          self._pose_callback, queue_size=20)
 
     def _pose_callback(self, msg):
         self._tf_broadcaster.sendTransform(
@@ -21,8 +27,12 @@ class GroundTruthTransformPublisher(object):
             (msg.pose.orientation.x, msg.pose.orientation.y,
              msg.pose.orientation.z, msg.pose.orientation.w),
             rospy.Time.now(),
-            "vicon_sensor",
+            "ground_truth",
             "vicon")
+        odom_msg = Odometry()
+        odom_msg.header = msg.header
+        odom_msg.pose.pose = msg.pose
+        self._odometry_pub.publish(odom_msg)
 
     def run(self):
         rospy.spin()

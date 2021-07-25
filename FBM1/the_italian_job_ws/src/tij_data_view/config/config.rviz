@@ -6,7 +6,10 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
-        - /LaserScan1
+        - /Odometry1/Shape1
+        - /Axes1
+        - /Odometry2
+        - /Odometry2/Shape1
       Splitter Ratio: 0.5
     Tree Height: 725
   - Class: rviz/Selection
@@ -123,10 +126,12 @@ Visualization Manager:
       Unreliable: false
       Value: true
       Visibility:
+        Axes: true
         Grid: true
         Image: true
         Imu: true
         LaserScan: true
+        Odometry: true
         PointCloud2: true
         PointStamped: true
         Pose: true
@@ -249,6 +254,81 @@ Visualization Manager:
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
+    - Angle Tolerance: 0.10000000149011612
+      Class: rviz/Odometry
+      Covariance:
+        Orientation:
+          Alpha: 0.5
+          Color: 255; 255; 127
+          Color Style: Unique
+          Frame: Local
+          Offset: 1
+          Scale: 1
+          Value: true
+        Position:
+          Alpha: 0.30000001192092896
+          Color: 204; 51; 204
+          Scale: 1
+          Value: true
+        Value: true
+      Enabled: true
+      Keep: 1000
+      Name: Odometry
+      Position Tolerance: 0.10000000149011612
+      Shape:
+        Alpha: 1
+        Axes Length: 0.10000000149011612
+        Axes Radius: 0.019999999552965164
+        Color: 255; 25; 0
+        Head Length: 0.30000001192092896
+        Head Radius: 0.10000000149011612
+        Shaft Length: 0.10000000149011612
+        Shaft Radius: 0.05000000074505806
+        Value: Axes
+      Topic: /openvslam/camera_pose
+      Unreliable: false
+      Value: true
+    - Class: rviz/Axes
+      Enabled: true
+      Length: 0.4000000059604645
+      Name: Axes
+      Radius: 0.019999999552965164
+      Reference Frame: base_link
+      Value: true
+    - Angle Tolerance: 0.10000000149011612
+      Class: rviz/Odometry
+      Covariance:
+        Orientation:
+          Alpha: 0.5
+          Color: 255; 255; 127
+          Color Style: Unique
+          Frame: Local
+          Offset: 1
+          Scale: 1
+          Value: true
+        Position:
+          Alpha: 0.30000001192092896
+          Color: 204; 51; 204
+          Scale: 1
+          Value: true
+        Value: true
+      Enabled: true
+      Keep: 1000
+      Name: Odometry
+      Position Tolerance: 0.10000000149011612
+      Shape:
+        Alpha: 1
+        Axes Length: 0.10000000149011612
+        Axes Radius: 0.019999999552965164
+        Color: 255; 25; 0
+        Head Length: 0.30000001192092896
+        Head Radius: 0.10000000149011612
+        Shaft Length: 1
+        Shaft Radius: 0.05000000074505806
+        Value: Axes
+      Topic: /vicon_client/METRICS/ideal_odom
+      Unreliable: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -277,25 +357,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/ThirdPersonFollower
-      Distance: 3.242827892303467
+      Distance: 8.207236289978027
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.596016526222229
-        Y: 0.8954362869262695
-        Z: -3.1264498829841614e-6
+        X: -2.0266127586364746
+        Y: 2.049276828765869
+        Z: -1.3521028449758887e-5
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.39979562163352966
+      Pitch: 0.4297969341278076
       Target Frame: base_link
       Value: ThirdPersonFollower (rviz)
-      Yaw: 2.9656076431274414
+      Yaw: 2.5106022357940674
     Saved: ~
 Window Geometry:
   Camera:
