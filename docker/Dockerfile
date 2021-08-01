@@ -233,6 +233,14 @@ RUN git clone https://github.com/OpenVSLAM-Community/openvslam.git \
  && make -j$(expr `nproc` - 4) \
  && make install && make clean
 
+# Dependencias rpg_trajectory_evaluation
+RUN sudo apt update \
+ && sudo apt install -y \
+    python3-pip \
+ && apt clean
+
+RUN sudo pip3 install numpy matplotlib colorama ruamel.yaml
+
 # Rosdep initialization
 RUN sudo apt update \
  && sudo apt install -y \
