@@ -1,15 +1,7 @@
 <launch>
 
-  <param name="/use_sim_time" value="true" />
-
   <arg name="dataset" default="FBM1_flight1.bag" />
   <arg name="loop" default="false" />
-
-  <include file="$(find tij_challenger)/launch/metrics_sensors_transformations.launch" />
-
-  <include file="$(find tij_challenger)/launch/rviz.launch">
-    <arg name="rviz_config" value="$(find tij_challenger)/config/config.rviz" />
-  </include>
 
   <arg if="$(eval loop==false)" name="loop_args" value="--loop" />
 
@@ -44,17 +36,6 @@
     <remap from="rgb/image_rect_color" to="/camera/color/decompressed" />
     <remap from="rgb/camera_info" to="/camera/color/camera_info" />
     <remap from="depth_registered/image_rect" to="/camera/depth_registered/image_rect_raw" />
-  </node>
-
-  <!-- OpenVSLAM -->
-  <node pkg="openvslam_ros" type="run_slam" name="openvslam"
-        args="-v /home/metrics/data/orb_vocab.fbow -c $(find tij_challenger)/config/metrics2021_rgbd.yaml"
-        output="screen">
-    <remap from="camera/color/image_raw" to="/camera/color/rectified" />
-    <remap from="camera/depth/image_raw" to="/camera/depth_registered/image_rect_raw" />
-    <param name="odom_frame" value="odom" />
-    <param name="map_frame"  value="vicon" />
-    <param name="publish_tf" value="true" />
   </node>
 
 </launch>
