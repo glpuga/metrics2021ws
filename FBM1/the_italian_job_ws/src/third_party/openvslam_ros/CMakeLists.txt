@@ -164,7 +164,7 @@ set(json_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/3rd/json/include)
 include_directories(${json_INCLUDE_DIR})
 
 # pangolin viewer
-set(USE_PANGOLIN_VIEWER ON CACHE BOOL "Enable Pangolin Viewer")
+set(USE_PANGOLIN_VIEWER OFF CACHE BOOL "Enable Pangolin Viewer")
 if(USE_PANGOLIN_VIEWER)
     find_library(Pangolin_Viewer_LIB pangolin_viewer)
     find_package(Pangolin REQUIRED)

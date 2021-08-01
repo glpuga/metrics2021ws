@@ -223,14 +223,14 @@ RUN git clone https://github.com/OpenVSLAM-Community/openvslam.git \
  && git submodule update -i --recursive \
  && mkdir build && cd build \
  && cmake \
-    -DUSE_PANGOLIN_VIEWER=ON \
-    -DINSTALL_PANGOLIN_VIEWER=ON \
+    -DUSE_PANGOLIN_VIEWER=OFF \
+    -DINSTALL_PANGOLIN_VIEWER=OFF \
     -DUSE_SOCKET_PUBLISHER=OFF \
-    -DUSE_STACK_TRACE_LOGGER=ON \
+    -DUSE_STACK_TRACE_LOGGER=OFF \
     -DBUILD_TESTS=ON \
     -DBUILD_EXAMPLES=ON \
     .. \
- && make -j$(nproc) \
+ && make -j$(expr `nproc` - 4) \
  && make install && make clean
 
 # Rosdep initialization
