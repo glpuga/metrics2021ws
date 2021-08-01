@@ -263,7 +263,7 @@ RUN /bin/sh -c 'echo "set-option -g default-shell /bin/bash" >> ~/.tmux.conf'
 RUN /bin/sh -c 'echo "export LD_LIBRARY_PATH=\"\$LD_LIBRARY_PATH\":/usr/local/lib" >> ~/.bashrc'
 
 
-WORKDIR /home/$USER
+WORKDIR /home/$USER/FBM1/the_italian_job_ws
 
 ENTRYPOINT ["fixuid"]
 

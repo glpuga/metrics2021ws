@@ -5,15 +5,15 @@
   <arg name="dataset" default="FBM1_flight1.bag" />
   <arg name="loop" default="false" />
 
-  <include file="$(find tij_data_view)/launch/metrics_sensors_transformations.launch" />
+  <include file="$(find tij_challenger)/launch/metrics_sensors_transformations.launch" />
 
-  <include file="$(find tij_data_view)/launch/rviz.launch">
-    <arg name="rviz_config" value="$(find tij_data_view)/config/config.rviz" />
+  <include file="$(find tij_challenger)/launch/rviz.launch">
+    <arg name="rviz_config" value="$(find tij_challenger)/config/config.rviz" />
   </include>
 
   <arg if="$(eval loop==false)" name="loop_args" value="--loop" />
 
-  <node name="rosbag_replayer" pkg="rosbag" type="play" respawn="false" args="--clock $(arg loop_args) $(find tij_data_view)/../../../dataset/$(arg dataset)" output="screen"></node>
+  <node name="rosbag_replayer" pkg="rosbag" type="play" respawn="false" args="--clock $(arg loop_args) $(find tij_challenger)/../../../dataset/$(arg dataset)" output="screen"></node>
 
   <!-- Decompress the color video feed -->
   <node name="decompress_image" pkg="image_transport" type="republish" args="compressed in:=/camera/color/image_raw raw out:=/camera/color/decompressed" respawn="false" output="screen"></node>
@@ -48,7 +48,7 @@
 
   <!-- OpenVSLAM -->
   <node pkg="openvslam_ros" type="run_slam" name="openvslam"
-        args="-v /home/metrics/data/orb_vocab.fbow -c $(find tij_data_view)/config/metrics2021_rgbd.yaml"
+        args="-v /home/metrics/data/orb_vocab.fbow -c $(find tij_challenger)/config/metrics2021_rgbd.yaml"
         output="screen">
     <remap from="camera/color/image_raw" to="/camera/color/rectified" />
     <remap from="camera/depth/image_raw" to="/camera/depth_registered/image_rect_raw" />

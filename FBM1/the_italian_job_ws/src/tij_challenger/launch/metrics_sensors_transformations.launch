@@ -45,6 +45,6 @@
   <node name="camera_depth_static_publisher" pkg="tf" type="static_transform_publisher" args="0.05 0.0 0.0 0.0 0.0 0.0 camera_color_optical_frame camera_depth_optical_frame 100" />
   <node name="camera_accel_static_publisher" pkg="tf" type="static_transform_publisher" args="0.0 0.0 0.0 -1.57 0.0 -1.57 camera_mount_frame camera_accel_optical_frame 100" />
 
-  <node name="groun_truth_publisher" pkg="tij_data_view" type="ground_truth_broadcaster.py" respawn="false" output="screen" />
+  <node name="groun_truth_publisher" pkg="tij_challenger" type="ground_truth_broadcaster.py" respawn="false" output="screen" />
 
 </launch>
