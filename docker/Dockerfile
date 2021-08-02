@@ -236,10 +236,13 @@ RUN git clone https://github.com/OpenVSLAM-Community/openvslam.git \
 # Dependencias rpg_trajectory_evaluation
 RUN sudo apt update \
  && sudo apt install -y \
-    python3-pip \
+    python-pip \
+    texlive-latex-extra \
+    texlive-fonts-recommended \
+    dvipng cm-super \
  && apt clean
 
-RUN sudo pip3 install numpy matplotlib colorama ruamel.yaml
+RUN sudo pip install numpy matplotlib colorama PyYaml
 
 # Rosdep initialization
 RUN sudo apt update \

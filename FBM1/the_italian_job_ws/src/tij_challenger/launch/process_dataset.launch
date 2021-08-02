@@ -2,14 +2,14 @@
 
   <param name="/use_sim_time" value="true" />
 
-  <arg name="dataset"     default="FBM1_flight1.bag" />
+  <arg name="dataset"     default="FBM1_flight1" />
   <arg name="loop"        default="false" />
   <arg name="enable_rviz" default="true" />
 
   <include file="$(find tij_challenger)/launch/metrics_sensors_transformations.launch" />
 
   <include file="$(find tij_challenger)/launch/replay_dataset_pipeline.launch">
-    <arg name="dataset" value="$(arg dataset)" />
+    <arg name="dataset" value="$(arg dataset).bag" />
     <arg name="loop"    value="$(arg loop)" />
   </include>
 
@@ -18,14 +18,28 @@
   </include>
 
   <!-- OpenVSLAM -->
-  <node pkg="openvslam_ros" type="run_slam" name="openvslam"
-        args="-v /home/metrics/data/orb_vocab.fbow -c $(find tij_challenger)/config/metrics2021_rgbd.yaml"
-        output="screen">
-    <remap from="camera/color/image_raw" to="/camera/color/rectified" />
-    <remap from="camera/depth/image_raw" to="/camera/depth_registered/image_rect_raw" />
-    <param name="odom_frame" value="odom" />
-    <param name="map_frame"  value="vicon" />
-    <param name="publish_tf" value="true" />
-  </node>
+  <group ns="OpenVSLAM">
+    <node pkg="openvslam_ros" type="run_slam" name="openvslam"
+          args="-v /home/metrics/data/orb_vocab.fbow -c $(find tij_challenger)/config/metrics2021_rgbd.yaml"
+          output="screen">
+      <remap from="camera/color/image_raw" to="/camera/color/rectified" />
+      <remap from="camera/depth/image_raw" to="/camera/depth_registered/image_rect_raw" />
+      <param name="odom_frame" value="base_link" />
+      <param name="map_frame"  value="odom" />
+      <param name="publish_tf" value="true" />
+    </node>
+  
+    <node pkg="tij_challenger" type="recorder.py" name="recorder" 
+          output="screen" required="true">
+
+      <param name="log_ground_truth"  value="true" />
+      <param name="log_ground_truth"  value="true" />
+
+      <param name="stamped_ground_truth_file"
+             value="$(find tij_challenger)/performance/$(arg dataset)/stamped_groundtruth.txt" />
+      <param name="stamped_traj_file"
+             value="$(find tij_challenger)/performance/$(arg dataset)/stamped_traj_estimate.txt" />
+    </node>
+  </group>
 
 </launch>

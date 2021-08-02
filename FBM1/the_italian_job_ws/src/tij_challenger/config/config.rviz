@@ -6,9 +6,9 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
+        - /Odometry1
         - /Odometry1/Shape1
         - /Axes1
-        - /Odometry2
         - /Odometry2/Shape1
       Splitter Ratio: 0.5
     Tree Height: 725
@@ -285,7 +285,7 @@ Visualization Manager:
         Shaft Length: 0.10000000149011612
         Shaft Radius: 0.05000000074505806
         Value: Axes
-      Topic: /openvslam/camera_pose
+      Topic: /OpenVSLAM/openvslam/camera_pose
       Unreliable: false
       Value: true
     - Class: rviz/Axes

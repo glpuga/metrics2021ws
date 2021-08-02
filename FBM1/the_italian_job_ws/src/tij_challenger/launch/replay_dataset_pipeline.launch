@@ -3,9 +3,12 @@
   <arg name="dataset" default="FBM1_flight1.bag" />
   <arg name="loop" default="false" />
 
-  <arg if="$(eval loop==false)" name="loop_args" value="--loop" />
+  <arg if="$(eval loop==true)" name="loop_args" value="--loop" />
+  <arg unless="$(eval loop==true)" name="loop_args" value="" />
 
-  <node name="rosbag_replayer" pkg="rosbag" type="play" respawn="false" args="--clock $(arg loop_args) $(find tij_challenger)/../../../dataset/$(arg dataset)" output="screen"></node>
+  <node name="rosbag_replayer" pkg="rosbag" type="play" respawn="false"
+        args="--clock $(arg loop_args) $(find tij_challenger)/../../../dataset/$(arg dataset)"
+        output="screen" required="true" />
 
   <!-- Decompress the color video feed -->
   <node name="decompress_image" pkg="image_transport" type="republish" args="compressed in:=/camera/color/image_raw raw out:=/camera/color/decompressed" respawn="false" output="screen"></node>
