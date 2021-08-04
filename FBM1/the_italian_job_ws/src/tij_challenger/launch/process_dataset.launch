@@ -18,7 +18,7 @@
   </include>
 
   <!-- OpenVSLAM -->
-  <group ns="OpenVSLAM">
+  <group ns="OpenVSLAM" if="false">
     <node pkg="openvslam_ros" type="run_slam" name="openvslam"
           args="-v /home/metrics/data/orb_vocab.fbow -c $(find tij_challenger)/config/metrics2021_rgbd.yaml"
           output="screen">
@@ -41,5 +41,13 @@
              value="$(find tij_challenger)/performance/$(arg dataset)/stamped_traj_estimate.txt" />
     </node>
   </group>
+
+
+  <!-- VINS-fusion -->
+  <group ns="VINSfusion" if="true">
+    <node pkg="tij_challenger" type="merge_imu_data.py" name="imu_merger" 
+          output="screen" required="true" />
+  </group>
+
 
 </launch>
