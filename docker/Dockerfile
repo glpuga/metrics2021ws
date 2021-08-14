@@ -240,6 +240,7 @@ RUN sudo apt update \
     texlive-latex-extra \
     texlive-fonts-recommended \
     dvipng cm-super \
+    libceres-dev \
  && apt clean
 
 RUN sudo pip install numpy matplotlib colorama PyYaml
