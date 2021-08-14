@@ -1,5 +1,7 @@
 <launch>
 
+  <node name="world_to_vicon_link_publisher" pkg="tf" type="static_transform_publisher" args="0.0 0.0 0.0 0.0 0.0 0.0 world vicon 100" />
+
   <!-- Fixed odometry, faked until we have a better solution -->
   <node name="odom_to_base_link_publisher" pkg="tf" type="static_transform_publisher" args="0.0 0.0 0.0 0.0 0.0 0.0 vicon odom 100" />
 

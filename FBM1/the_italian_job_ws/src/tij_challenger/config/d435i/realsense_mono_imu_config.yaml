@@ -6,7 +6,7 @@ imu: 1
 num_of_cam: 1
 
 imu_topic: "/camera/combined/sample"
-image0_topic: "/camera/depth/image_raw"
+image0_topic: "/camera/color/rectified"
 output_path: "/tmp/dji/output/"
 
 cam0_calib: "camera_model.yaml"

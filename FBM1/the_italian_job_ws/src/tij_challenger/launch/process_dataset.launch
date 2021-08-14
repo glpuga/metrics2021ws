@@ -39,15 +39,22 @@
              value="$(find tij_challenger)/performance/$(arg dataset)/stamped_groundtruth.txt" />
       <param name="stamped_traj_file"
              value="$(find tij_challenger)/performance/$(arg dataset)/stamped_traj_estimate.txt" />
+  
+      <remap from="/OpenVSLAM/openvslam/camera_pose" to="/vehicle/odometry"/>
     </node>
   </group>
-
 
   <!-- VINS-fusion -->
   <group ns="VINSfusion" if="true">
     <node pkg="tij_challenger" type="merge_imu_data.py" name="imu_merger" 
           output="screen" required="true" />
-  </group>
 
+    <node pkg="vins" type="vins_node" name="vins_fusion"
+          args="$(find tij_challenger)/config/d435i/realsense_mono_imu_config.yaml"
+          output="screen">
+      <remap from="/VINSfusion/vins_fusion/odometry" to="/vehicle/odometry"/>
+    </node>
+
+  </group>
 
 </launch>
