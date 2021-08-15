@@ -1,7 +1,7 @@
 <launch>
 
   <!-- Fixed odometry, faked until we have a better solution -->
-  <node name="odom_to_base_link_publisher" pkg="tf" type="static_transform_publisher" args="0.0 0.0 0.0 0.0 0.0 0.0 vicon odom 100" />
+  <node name="vicon_to_base_link_publisher" pkg="tf" type="static_transform_publisher" args="0.0 0.0 0.0 0.0 0.0 0.0 vicon odom 100" />
 
   <!-- Vicon Pose is at the center of gravity of the drone, with FLU (Forward, Left, Up) axis, as well as the flight controller (DJI A3). -->
   <node name="vicon_frame_static_publisher" pkg="tf" type="static_transform_publisher" args="0.0 0.0 0.0 0.0 0.0 0.0 base_link vicon_sensor 100" />
