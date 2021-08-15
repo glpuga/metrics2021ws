@@ -69,7 +69,7 @@ Tracking:
   max_num_keypoints: 1000
   ini_max_num_keypoints: 2000
   depth_threshold: 200.0
-  depthmap_factor: 1000.0
+  depthmap_factor: 860.0
 
 #================#
 # ORB Parameters #
