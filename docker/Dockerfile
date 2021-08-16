@@ -242,6 +242,14 @@ RUN sudo apt update \
     dvipng cm-super \
  && apt clean
 
+RUN sudo apt update \
+ && sudo apt install -y \
+    python-pip \
+    ros-melodic-robot-localization \
+    ros-melodic-rtabmap-ros \
+    dvipng cm-super \
+ && apt clean
+
 RUN sudo pip install numpy matplotlib colorama PyYaml
 
 # Rosdep initialization
