@@ -14,7 +14,8 @@ namespace openvslam_ros {
 system::system(const std::shared_ptr<openvslam::config>& cfg, const std::string& vocab_file_path, const std::string& mask_img_path)
     : SLAM_(cfg, vocab_file_path), cfg_(cfg), private_nh_("~"), it_(nh_), tp_0_(std::chrono::steady_clock::now()),
       mask_(mask_img_path.empty() ? cv::Mat{} : cv::imread(mask_img_path, cv::IMREAD_GRAYSCALE)),
-      pose_pub_(private_nh_.advertise<nav_msgs::Odometry>("camera_pose", 1)),
+      camera_pose_pub_(private_nh_.advertise<nav_msgs::Odometry>("camera_pose", 1)),
+      pose_pub_(private_nh_.advertise<nav_msgs::Odometry>("pose", 1)),
       map_to_odom_broadcaster_(std::make_shared<tf2_ros::TransformBroadcaster>()),
       tf_(std::make_unique<tf2_ros::Buffer>()),
       transform_listener_(std::make_shared<tf2_ros::TransformListener>(*tf_)) {
@@ -27,21 +28,23 @@ void system::publish_pose(const Eigen::Matrix4d& cam_pose_wc, const ros::Time& s
     Eigen::Matrix3d rot(cam_pose_wc.block<3, 3>(0, 0));
     Eigen::Translation3d trans(cam_pose_wc.block<3, 1>(0, 3));
     Eigen::Affine3d map_to_camera_affine(trans * rot);
-    Eigen::Matrix3d rot_ros_to_cv_map_frame;
-    rot_ros_to_cv_map_frame << 0, 0, 1,
-        -1, 0, 0,
-        0, -1, 0;
-
-    // Transform map frame from CV coordinate system to ROS coordinate system
-    map_to_camera_affine.prerotate(rot_ros_to_cv_map_frame);
 
     // Create odometry message and update it with current camera pose
-    nav_msgs::Odometry pose_msg;
-    pose_msg.header.stamp = stamp;
-    pose_msg.header.frame_id = map_frame_;
-    pose_msg.child_frame_id = camera_link_;
-    pose_msg.pose.pose = tf2::toMsg(map_to_camera_affine);
-    pose_pub_.publish(pose_msg);
+    {
+        Eigen::Matrix3d rot_ros_to_cv_map_frame;
+        rot_ros_to_cv_map_frame << 0, 0, 1,
+            -1, 0, 0,
+            0, -1, 0;
+        // Transform map frame from CV coordinate system to ROS coordinate system
+        map_to_camera_affine.prerotate(rot_ros_to_cv_map_frame);
+
+        nav_msgs::Odometry pose_msg;
+        pose_msg.header.stamp = stamp;
+        pose_msg.header.frame_id = map_frame_;
+        pose_msg.child_frame_id = camera_link_;
+        pose_msg.pose.pose = tf2::toMsg(map_to_camera_affine);
+        camera_pose_pub_.publish(pose_msg);
+    }
 
     // Send map->odom transform. Set publish_tf to false if not using TF
     if (publish_tf_) {
@@ -60,6 +63,23 @@ void system::publish_pose(const Eigen::Matrix4d& cam_pose_wc, const ros::Time& s
             ROS_ERROR("Transform failed: %s", ex.what());
         }
     }
+    
+    // Create odometry message and update it with current pose
+    {
+        Eigen::Matrix3d cam_to_odom_frame;
+        cam_to_odom_frame << 
+            0, -1,  0,
+            0,  0, -1,
+            1,  0,  0;
+        map_to_camera_affine.rotate(cam_to_odom_frame);
+
+        nav_msgs::Odometry pose_msg;
+        pose_msg.header.stamp = stamp;
+        pose_msg.header.frame_id = map_frame_;
+        pose_msg.child_frame_id = camera_link_;
+        pose_msg.pose.pose = tf2::toMsg(map_to_camera_affine);
+        pose_pub_.publish(pose_msg);
+    }
 }
 
 void system::setParams() {
@@ -74,7 +94,7 @@ void system::setParams() {
 
     // Set publish_tf to false if not using TF
     publish_tf_ = true;
-    private_nh_.param("publish_tf_", publish_tf_, publish_tf_);
+    private_nh_.param("publish_tf", publish_tf_, publish_tf_); /* glpuga: my own fix to the parameter name */
 
     // Publish pose's timestamp in the future
     transform_tolerance_ = 0.5;

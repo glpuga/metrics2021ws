@@ -35,6 +35,7 @@ public:
     std::chrono::steady_clock::time_point tp_0_;
     cv::Mat mask_;
     std::vector<double> track_times_;
+    ros::Publisher camera_pose_pub_;
     ros::Publisher pose_pub_;
     ros::Subscriber init_pose_sub_;
     std::shared_ptr<tf2_ros::TransformBroadcaster> map_to_odom_broadcaster_;

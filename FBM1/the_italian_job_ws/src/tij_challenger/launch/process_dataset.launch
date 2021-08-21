@@ -18,7 +18,7 @@
   </include>
 
   <!-- OpenVSLAM -->
-  <group ns="OpenVSLAM" if="true">
+  <group ns="OpenVSLAM" if="false">
     <arg name="use_hand_tuned_scale" value="false" />
 
     <arg name="openvslam_config_file" value="metrics2021_rgbd_hand_tuned.yaml" if="$(arg use_hand_tuned_scale)" /> 
@@ -29,7 +29,7 @@
           output="screen">
       <remap from="camera/color/image_raw" to="/camera/color/decompressed" />
       <remap from="camera/depth/image_raw" to="/camera/depth_registered/image_rect_raw" />
-      <remap from="~camera_pose" to="/odometry/final" />
+      <remap from="~pose" to="/odometry/final" />
       <param name="odom_frame" value="base_link" />
       <param name="map_frame"  value="odom" />
       <param name="publish_tf" value="true" />
@@ -49,7 +49,7 @@
   </group>
 
   <!-- RTABMap RGBD Odom -->
-  <!-- <group ns="RTABMap_rgbd_odom" if="false">
+  <group ns="RTABMap_rgbd_odom" if="false">
     <node pkg="rtabmap_ros" type="rgbd_odometry" name="rtabmap_rgbd_odom" output="screen">
       <remap from="rgb/image"       to="/camera/color/decompressed" />
       <remap from="rgb/camera_info" to="/camera/color/camera_info" />
@@ -70,10 +70,10 @@
       <param name="stamped_ground_truth_file" value="$(find tij_challenger)/performance/$(arg dataset)/stamped_groundtruth.txt" />
       <param name="stamped_traj_file" value="$(find tij_challenger)/performance/$(arg dataset)/stamped_traj_estimate.txt" />
     </node>
-  </group> -->
+  </group>
 
-  <!-- RTABMap SLAM calculates vicon/odom transform to visual_odom-->
-  <group ns="RTABMap_SLAM" if="false">
+  <!-- OpenVSLAM with IMU integration using robot_localization -->
+  <group ns="OpenVSLAM_with_IMU" if="true">
 
     <arg name="use_hand_tuned_scale" value="false" />
     <arg name="openvslam_config_file" value="metrics2021_rgbd_hand_tuned.yaml" if="$(arg use_hand_tuned_scale)" /> 
@@ -84,27 +84,25 @@
           output="screen">
       <remap from="camera/color/image_raw" to="/camera/color/decompressed" />
       <remap from="camera/depth/image_raw" to="/camera/depth_registered/image_rect_raw" />
-      <remap from="/RTABMap_SLAM/openvslam_odom/camera_pose" to="/odometry/visual_odometry" />
+      <remap from="~pose" to="/odometry/visual_odometry" />
       <param name="odom_frame" value="base_link" />
       <param name="map_frame"  value="odom" />
-      <param name="publish_tf" value="true" />
+      <param name="publish_tf" value="false" />
     </node>
 
     <!-- Robot-Localization, fuses IMU data with visual odometry -->
     <node pkg="robot_localization" type="ukf_localization_node" name="ukf_localization_node" output="screen">
-      <remap from="odometry/filtered"  to="/odometry/filtered" />
+      <remap from="odometry/filtered"  to="/odometry/final" />
 
       <!-- reference frames. Remember we are using a fixed odom == world static link -->
       <param name="world_frame"     value="odom" />
-      <param name="map_frame"       value="odom" />
-      <param name="odom_frame"      value="filtered_odom" />
+      <param name="odom_frame"      value="odom" />
       <param name="base_link_frame" value="base_link" />
 
       <!-- publish odom to base_link -->
       <param name="publish_tf" value="true" />
 
       <!-- visual odometry from RTABMap RGBD Odom -->
-      <!-- TODO figure if this provides velocity -->
       <param name="odom0" value="/odometry/visual_odometry" />
       <param name="odom0_differential" value="true" />
       <rosparam param="odom0_config">
@@ -124,28 +122,28 @@
          false, false, false]</rosparam>
 
       <!-- dji imu, linear accel and angular velocity -->
-      <param name="imu1" value="/dji_sdk/imu" />
+      <!-- <param name="imu1" value="/dji_sdk/imu" />
       <param name="imu1_remove_gravitational_acceleration" value="true" />
       <rosparam param="imu1_config">
        [false, false, false,
         false, false, false,
         false, false, false,
         true,   true,  true,
-        true,   true,  true]</rosparam>
+        true,   true,  true]</rosparam> -->
 
       <!-- 
         LINEAR ACCELERATION FROM THE D435I IS REALLY CRAPPY
         DONT ENABLE!
        -->
       <!-- linear accel imu, only linear accel -->
-      <!-- <param name="imu2" value="/camera/accel/sample" />
-      <param name="imu2_remove_gravitational_acceleration" value="true" />
-      <rosparam param="imu2_config">
+      <param name="imu1" value="/camera/accel/sample" />
+      <param name="imu1_remove_gravitational_acceleration" value="true" />
+      <rosparam param="imu1_config">
         [false, false, false,
          false, false, false,
          false, false, false,
          false, false, false,
-         true,   true,  true]</rosparam> -->
+         true,   true,  true]</rosparam>
 
       <rosparam param="initial_state">
         [0.0,  0.0,  0.0,
