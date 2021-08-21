@@ -18,7 +18,7 @@
   </include>
 
   <!-- OpenVSLAM -->
-  <!-- <group ns="OpenVSLAM" if="false">
+  <group ns="OpenVSLAM" if="true">
     <arg name="use_hand_tuned_scale" value="false" />
 
     <arg name="openvslam_config_file" value="metrics2021_rgbd_hand_tuned.yaml" if="$(arg use_hand_tuned_scale)" /> 
@@ -29,7 +29,7 @@
           output="screen">
       <remap from="camera/color/image_raw" to="/camera/color/decompressed" />
       <remap from="camera/depth/image_raw" to="/camera/depth_registered/image_rect_raw" />
-      <remap from="camera_pose" to="/odometry/final" />
+      <remap from="~camera_pose" to="/odometry/final" />
       <param name="odom_frame" value="base_link" />
       <param name="map_frame"  value="odom" />
       <param name="publish_tf" value="true" />
@@ -46,7 +46,7 @@
       <param name="stamped_traj_file"
              value="$(find tij_challenger)/performance/$(arg dataset)/stamped_traj_estimate.txt" />
     </node>
-  </group> -->
+  </group>
 
   <!-- RTABMap RGBD Odom -->
   <!-- <group ns="RTABMap_rgbd_odom" if="false">
@@ -73,22 +73,9 @@
   </group> -->
 
   <!-- RTABMap SLAM calculates vicon/odom transform to visual_odom-->
-  <group ns="RTABMap_SLAM" if="true">
+  <group ns="RTABMap_SLAM" if="false">
 
-    <!-- RTABMap RGBD Odom, provides visual_odom to base_link transform -->
-    <node pkg="rtabmap_ros" type="rgbd_odometry" name="rtabmap_rgbd_odom" output="screen">
-      <remap from="rgb/image"       to="/camera/color/decompressed" />
-      <remap from="rgb/camera_info" to="/camera/color/camera_info" />
-      <remap from="depth/image"     to="/camera/depth_registered/image_rect_raw" />
-      <remap from="odom"            to="/odometry/visual_odometry" />
-      <param name="Vis/MaxDepth"    value="10.0"/>
-      <param name="approx_sync"     value="false" />
-      <param name="frame_id"        value="base_link" />
-      <param name="odom_frame_id"   value="visual_odom" />
-      <param name="publish_tf"      value="false" />
-    </node>
-
-    <!-- <arg name="use_hand_tuned_scale" value="false" />
+    <arg name="use_hand_tuned_scale" value="false" />
     <arg name="openvslam_config_file" value="metrics2021_rgbd_hand_tuned.yaml" if="$(arg use_hand_tuned_scale)" /> 
     <arg name="openvslam_config_file" value="metrics2021_rgbd.yaml" unless="$(arg use_hand_tuned_scale)" /> 
 
@@ -101,14 +88,15 @@
       <param name="odom_frame" value="base_link" />
       <param name="map_frame"  value="odom" />
       <param name="publish_tf" value="true" />
-    </node> -->
+    </node>
 
     <!-- Robot-Localization, fuses IMU data with visual odometry -->
     <node pkg="robot_localization" type="ukf_localization_node" name="ukf_localization_node" output="screen">
       <remap from="odometry/filtered"  to="/odometry/filtered" />
 
       <!-- reference frames. Remember we are using a fixed odom == world static link -->
-      <param name="world_frame"     value="filtered_odom" />
+      <param name="world_frame"     value="odom" />
+      <param name="map_frame"       value="odom" />
       <param name="odom_frame"      value="filtered_odom" />
       <param name="base_link_frame" value="base_link" />
 
@@ -166,26 +154,6 @@
          0.0,  0.0,  0.0,
          0.0,  0.0,  0.0]</rosparam>
     </node>
-
-    <node pkg="rtabmap_ros" type="rtabmap" name="rtabmap_slam" args="-d" output="screen">
-      <remap from="rgb/image"        to="/camera/color/decompressed" />
-      <remap from="rgb/camera_info"  to="/camera/color/camera_info" />
-      <remap from="depth/image"      to="/camera/depth_registered/image_rect_raw" />
-      <remap from="odom"             to="/odometry/filtered" />
-
-      <param name="Vis/MaxDepth"     value="10.0"/>
-
-      <param name="subscribe_depth"  value="true" />
-      <param name="odom_sensor_sync" value="true" />
-
-      <param name="approx_sync"      value="false" />
-      <param name="frame_id"         value="base_link" />
-      <param name="odom_frame_id"    value="filtered_odom" />
-      <param name="map_frame_id"     value="vicon" />
-
-      <param name="publish_tf" value="true" />
-    </node> 
-
 
     <node pkg="tij_challenger" type="recorder.py" name="recorder" output="screen" required="true">
 

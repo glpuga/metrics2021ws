@@ -246,7 +246,6 @@ RUN sudo apt update \
  && sudo apt install -y \
     python-pip \
     ros-melodic-robot-localization \
-    ros-melodic-rtabmap-ros \
     dvipng cm-super \
  && apt clean
 
