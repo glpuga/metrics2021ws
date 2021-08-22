@@ -6,10 +6,9 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
-        - /Odometry1
         - /Odometry1/Shape1
         - /Odometry2/Shape1
-      Splitter Ratio: 0.5
+      Splitter Ratio: 0.5439330339431763
     Tree Height: 725
   - Class: rviz/Selection
     Name: Selection
@@ -68,15 +67,6 @@ Visualization Manager:
       Unreliable: false
       Value: true
     - Alpha: 1
-      Class: rviz_plugin_tutorials/Imu
-      Color: 204; 51; 204
-      Enabled: false
-      History Length: 1
-      Name: Imu
-      Topic: /dji_sdk/imu
-      Unreliable: true
-      Value: false
-    - Alpha: 1
       Axes Length: 1
       Axes Radius: 0.10000000149011612
       Class: rviz/Pose
@@ -91,29 +81,6 @@ Visualization Manager:
       Topic: /vicon_client/METRICS/pose
       Unreliable: false
       Value: true
-    - Class: rviz/TF
-      Enabled: false
-      Frame Timeout: 15
-      Frames:
-        All Enabled: true
-      Marker Scale: 1
-      Name: TF
-      Show Arrows: true
-      Show Axes: true
-      Show Names: true
-      Tree:
-        {}
-      Update Interval: 0
-      Value: false
-    - Alpha: 1
-      Class: rviz_plugin_tutorials/Imu
-      Color: 255; 0; 0
-      Enabled: false
-      History Length: 1
-      Name: Imu
-      Topic: /camera/accel/sample
-      Unreliable: false
-      Value: false
     - Class: rviz/Camera
       Enabled: true
       Image Rendering: background and overlay
@@ -128,7 +95,6 @@ Visualization Manager:
         Axes: true
         Grid: true
         Image: true
-        Imu: true
         LaserScan: true
         Odometry: true
         Path: true
@@ -136,7 +102,6 @@ Visualization Manager:
         PointStamped: true
         Pose: true
         PoseWithCovariance: true
-        TF: true
         Value: true
       Zoom Factor: 0.5
     - Alpha: 1
@@ -206,7 +171,7 @@ Visualization Manager:
       Color: 255; 255; 255
       Color Transformer: RGB8
       Decay Time: 0
-      Enabled: true
+      Enabled: false
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Max Intensity: 4096
@@ -223,7 +188,7 @@ Visualization Manager:
       Unreliable: false
       Use Fixed Frame: true
       Use rainbow: true
-      Value: true
+      Value: false
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -382,6 +347,36 @@ Visualization Manager:
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
+    - Alpha: 1
+      Autocompute Intensity Bounds: true
+      Autocompute Value Bounds:
+        Max Value: 10
+        Min Value: -10
+        Value: true
+      Axis: Z
+      Channel Name: intensity
+      Class: rviz/LaserScan
+      Color: 255; 255; 255
+      Color Transformer: Intensity
+      Decay Time: 0
+      Enabled: true
+      Invert Rainbow: false
+      Max Color: 255; 255; 255
+      Max Intensity: 4096
+      Min Color: 0; 0; 0
+      Min Intensity: 0
+      Name: LaserScan
+      Position Transformer: XYZ
+      Queue Size: 10
+      Selectable: true
+      Size (Pixels): 3
+      Size (m): 0.05000000074505806
+      Style: Flat Squares
+      Topic: /camera/depth_registered/scan
+      Unreliable: false
+      Use Fixed Frame: true
+      Use rainbow: true
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -410,25 +405,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/ThirdPersonFollower
-      Distance: 11.55285358428955
+      Distance: 7.3480424880981445
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -1.2193639278411865
-        Y: 0.6343474388122559
+        X: -0.2867923974990845
+        Y: 0.9707052707672119
         Z: -1.0139554433408193e-5
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.28479644656181335
+      Pitch: 0.5897967219352722
       Target Frame: base_link
       Value: ThirdPersonFollower (rviz)
-      Yaw: 2.2956037521362305
+      Yaw: 2.645604133605957
     Saved: ~
 Window Geometry:
   Camera:
