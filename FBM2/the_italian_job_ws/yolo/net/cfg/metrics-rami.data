@@ -1,0 +1,5 @@
+classes = 1
+train  = net/cfg/metrics-rami-train-dataset.txt
+valid  = net/cfg/metrics-rami-test-dataset.txt
+names  = net/cfg/metrics-rami.names
+backup = net/backup/

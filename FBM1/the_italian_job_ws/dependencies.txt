@@ -1,0 +1,18 @@
+
+The software stack used here is based on OpenVSLAM and general ROS packages (robot-localization, cv_bridge).
+
+In order to buildl OpenVSLAM a number of libraries need to be installed/updated in the base system. The
+full intallation instructions used to do this can be found here:
+
+https://openvslam-community.readthedocs.io/en/latest/installation.html
+
+The exact sequence, with comments, can be found in the docker build file that's included in this image within
+the /home/metrics/the_italian_job_docker folder.
+
+---
+
+Additionally, the rpg_trajectory_evaluation has been installed from source from the original
+repository to evaluate the solution during development. This was done simply by cloning the repository
+into the catkin workspace.
+
+https://github.com/uzh-rpg/rpg_trajectory_evaluation

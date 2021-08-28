@@ -1,0 +1,4 @@
+*.png
+*.weights
+predictions.jpg
+bad.list

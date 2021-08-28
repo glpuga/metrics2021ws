@@ -1,0 +1,35 @@
+
+Two dependencies get installed and used here:
+
+- cmake, 3.21
+- Darknet, recent master tip
+
+---
+
+= cmake 3.21, needed to build the latest version of darknet.
+
+Gets installed from a custom repository provided by Kitware, the developers of cmake.
+
+RUN sudo apt update \
+ && sudo apt install -y gpg wget \
+ && wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null \
+ && echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ bionic main' | sudo tee /etc/apt/sources.list.d/kitware.list >/dev/null \
+ && sudo apt-get update \
+ && sudo rm /usr/share/keyrings/kitware-archive-keyring.gpg \
+ && sudo apt-get install -y kitware-archive-keyring \
+ && sudo apt-get install -y cmake \
+ && apt clean
+
+---
+
+Darknet, latest version
+
+Installed and built from source, from the official repository.
+
+RUN git clone https://github.com/AlexeyAB/darknet.git \
+ && cd darknet \
+ && git checkout 9ff8653d999c8a22bc8f1ff4f4a8a3cc5b63d255 \
+ && mkdir -p build_release && cd build_release \
+ && cmake .. \
+ && cmake --build . --target install -- -j$(expr `nproc` - 4)
+

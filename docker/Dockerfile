@@ -5,17 +5,25 @@ ARG TEAM_NAME=the_italian_job
 ARG USER=metrics
 ARG GROUP=metrics
 
-# Setup environment
+#
+# Setup environment for non-interactive installation
 ENV DEBIAN_FRONTEND noninteractive
 
-# Regain privileges to add some tools to the container
+#
+# Regain privileges to add some tools to the container and
+# install software
 USER root:root
 
-# Replace the UID for metrics to 1000, since that's what fixudi needs
+#
+# Setup user and group ids to match those in the host. This is useful
+# when developing from the host while running in the container. To this
+# end an utility called "fixuid" is used.
+
+# Replace the UID for metrics to 1000, since that's what fixuid needs
 RUN sed -i "s/${USER}:x:1001:0:/${USER}:x:1000:1000:/g" /etc/passwd \
     && chown -v -R $USER: /home/$USER
 
-# Install fixuid to match the uid/gid in and out of the container
+# Install fixuid from the repository and set it up
 RUN curl -SsL https://github.com/boxboat/fixuid/releases/download/v0.4/fixuid-0.4-linux-amd64.tar.gz | tar -C /usr/local/bin -xzf - && \
     chown root:root /usr/local/bin/fixuid && \
     chmod 4755 /usr/local/bin/fixuid && \
@@ -26,7 +34,8 @@ RUN curl -SsL https://github.com/boxboat/fixuid/releases/download/v0.4/fixuid-0.
 RUN adduser $USER sudo \
     && echo "$USER ALL=NOPASSWD: ALL" >> /etc/sudoers.d/$USER
 
-# Maint tool installation section
+#
+# Install command line utilities used for development
 RUN apt-get update && apt-get install -y \
     curl \
     clang-format \
@@ -35,20 +44,27 @@ RUN apt-get update && apt-get install -y \
     tmux \
     && sudo apt clean
 
-# Missing nvidia libraries
+# (TODO: not needed) Missing nvidia libraries
 RUN sudo apt update \
  && sudo apt install -y \
     libnvidia-gl-440 \
  && apt clean
 
-# OpenvSLAM installation
+#
+# Build and install OpenVSLAM from source.
+# This requires installing lots of OpenVSLAM dependencies, since the versions of many libraries
+# are not new enough for OpenVSLAM, or in some cases customized versions are needed.
+# The full installation instructions can be found here:
+# https://openvslam-community.readthedocs.io/en/latest/installation.html
+
+# Update source, per instructions
 RUN apt update \
  && apt upgrade -y --no-install-recommends
 
-#  basic dependencies"
+# basic bulid dependencies
 RUN apt update \
  && apt install -y \
-     build-essential \
+    build-essential \
     pkg-config \
     cmake \
     git \
@@ -76,7 +92,7 @@ RUN apt update \
     libavresample-dev \
  && sudo apt clean
 
-# eigen dependencies
+# Eigen dependencies
 RUN apt update \
  && apt install -y \
     gfortran \
@@ -233,6 +249,11 @@ RUN git clone https://github.com/OpenVSLAM-Community/openvslam.git \
  && make -j$(expr `nproc` - 4) \
  && make install && make clean
 
+#
+# Install dependencies for rpg_trajectory_evaluation.
+# This is not used during competition. It allows us to measure and compare approaches
+# in FBM1. 
+
 # Dependencias rpg_trajectory_evaluation
 RUN sudo apt update \
  && sudo apt install -y \
@@ -242,15 +263,54 @@ RUN sudo apt update \
     dvipng cm-super \
  && apt clean
 
+# Required by rpg_trajectory_evaluation
+RUN sudo pip install numpy matplotlib colorama PyYaml
+
+#
+# Install the robot_localization ros package, used in FBM1.
+# Also install depthimage_to_laserscan, used to evaluate sensor data. 
+
+# Robot Localization plus some packages for rpg_trajectory_evaluation
 RUN sudo apt update \
  && sudo apt install -y \
-    python-pip \
     ros-melodic-robot-localization \
     ros-melodic-depthimage-to-laserscan \
-    dvipng cm-super \
  && apt clean
 
-RUN sudo pip install numpy matplotlib colorama PyYaml
+#
+# Build and install a recent version of Darknet from AlexeyAB.
+
+# # Darknet requirements to use GPU
+# RUN sudo apt update \
+#  && sudo apt install -y --reinstall |\
+#     libcudnn8-dev \
+#     cuda-toolkit-11-2 \
+#  && apt clean
+
+# Install a recent version of cmake, required to be able to build the latest version of Darknet.
+# The one already present in the ubuntu repositories is not recent enough.
+RUN sudo apt update \
+ && sudo apt install -y gpg wget \
+ && wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null \
+ && echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ bionic main' | sudo tee /etc/apt/sources.list.d/kitware.list >/dev/null \
+ && sudo apt-get update \
+ && sudo rm /usr/share/keyrings/kitware-archive-keyring.gpg \
+ && sudo apt-get install -y kitware-archive-keyring \
+ && sudo apt-get install -y cmake \
+ && apt clean
+
+# Build Darknet from source and install within /opt
+WORKDIR /root/build
+RUN git clone https://github.com/AlexeyAB/darknet.git \
+ && cd darknet \
+ && git checkout 9ff8653d999c8a22bc8f1ff4f4a8a3cc5b63d255 \
+ && mkdir -p build_release && cd build_release \
+ && cmake .. \
+ && cmake --build . --target install -- -j$(expr `nproc` - 4)
+RUN mv /root/build/darknet /opt/darknet
+
+#
+# Misc installations
 
 # Rosdep initialization
 RUN sudo apt update \
@@ -259,30 +319,48 @@ RUN sudo apt update \
  && apt clean \
  && rosdep init
 
-# # Add extra tools here for faster image rebuild
-# RUN apt-get update && apt-get install -y \
-#     tmux \
-#     && sudo apt clean
+#
+# Final container setup
 
 # Continue as the user
 USER $USER:$GROUP
 
+# Update the rosdep db
 RUN rosdep update
 
-# Download the openvslam vocabulary
+# Download the openvslam vocabulary file. Needed in runtime.
 RUN /bin/sh -c 'mkdir -p ~/data/' \
  && cd ~/data/ \
  && curl -sL "https://github.com/OpenVSLAM-Community/FBoW_orb_vocab/raw/main/orb_vocab.fbow" -o orb_vocab.fbow
 
-# Create a file exchange folder
+# Download the Yolov4 pretrained network. Needed when training from scratch.
+RUN /bin/sh -c 'mkdir -p ~/data/yolo' \
+ && cd ~/data/yolo \
+ && curl -sL "https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v3_optimal/yolov4.conv.137" -o yolov4.conv.137
+
+# Correct double-extension files in the dataset. 
+# Many of the files in the training dataset have the file extension repeated twice, in a way to the name of the image
+# does not match that of the txt file that accompanies it. The following section corrects that by renaming those files.
+WORKDIR /home/metrics/FBM2/dataset/crack_detection_dataset
+RUN cd train \
+ && for oldname in `ls *.jpg.jpg`; do newname=`echo $oldname | sed 's/.jpg.jpg/.jpg/'`; mv $oldname $newname; done \
+ && cd .. \
+ && cd evaluation \
+ && for oldname in `ls *.jpg.jpg`; do newname=`echo $oldname | sed 's/.jpg.jpg/.jpg/'`; mv $oldname $newname; done
+
+# Create a file exchange folder. This is only a utility folder used during development to move files in and out
+# of the container.
 RUN /bin/sh -c 'mkdir -p ~/fileio'
 
+# Misc setup
 RUN /bin/sh -c 'touch ~/.bashrc'
 RUN /bin/sh -c 'echo "set-option -g default-shell /bin/bash" >> ~/.tmux.conf'
 RUN /bin/sh -c 'echo "export LD_LIBRARY_PATH=\"\$LD_LIBRARY_PATH\":/usr/local/lib" >> ~/.bashrc'
 
+# Add darknet to the path
+RUN /bin/sh -c 'echo "export PATH=\"\$PATH\":/opt/darknet/build_release" >> ~/.bashrc'
 
-WORKDIR /home/$USER/FBM1/the_italian_job_ws
+WORKDIR /home/$USER/
 
 ENTRYPOINT ["fixuid"]
 
