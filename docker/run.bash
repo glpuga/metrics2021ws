@@ -17,7 +17,7 @@
 #
 #
 
-IMAGE_NAME="metrics2021_devel_env"
+IMAGE_NAME="metrics2021"
 
 RUNTIME="runc"
 

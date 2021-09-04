@@ -45,7 +45,7 @@ class Recorder(object):
 
         if (self._log_stamped_traj and not self._stamped_traj_file):
             rospy.logerr(
-                "To log the stamped ground truth you need to specify the filepath")
+                "To log the stamped trajectory you need to specify the filepath")
             raise ValueError()
 
         if self._log_stamped_traj:

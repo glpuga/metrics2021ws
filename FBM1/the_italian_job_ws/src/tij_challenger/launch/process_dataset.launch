@@ -2,16 +2,27 @@
 
   <param name="/use_sim_time" value="true" />
 
-  <arg name="dataset" default="FBM1_flight1" />
+  <!-- absolute path to the bag_file -->
+  <arg name="bag_file" />
+  <!-- absolute path to the results file -->
+  <arg name="output_file" />
+  <!-- absolute path to the ground truth record -->
+  <arg name="ground_truth_file" default="" />
+  <!-- enable competition mode -->
+  <arg name="competition_mode" default="false" />
+
   <arg name="loop" default="false" />
   <arg name="enable_rviz" default="true" />
 
   <arg name="openvslam_config_file" value="metrics2021_rgbd.yaml" /> 
+  
+  <arg name="log_ground_truth" default="false" if="$(arg competition_mode)" />
+  <arg name="log_ground_truth" default="true"  unless="$(arg competition_mode)" />
 
   <include file="$(find tij_challenger)/launch/metrics_sensors_transformations.launch" />
 
   <include file="$(find tij_challenger)/launch/replay_dataset_pipeline.launch">
-    <arg name="dataset" value="$(arg dataset).bag" />
+    <arg name="bag_file" value="$(arg bag_file)" />
     <arg name="loop" value="$(arg loop)" />
   </include>
 
@@ -35,18 +46,18 @@
     <node pkg="tij_challenger" type="recorder.py" name="recorder" 
           output="screen" required="true">
 
-      <param name="log_ground_truth"  value="true" />
-      <param name="log_ground_truth"  value="true" />
+      <param name="log_ground_truth"  value="$(arg log_ground_truth)" />
+      <param name="log_stamped_traj"  value="true" />
 
       <param name="stamped_ground_truth_file"
-             value="$(find tij_challenger)/performance/$(arg dataset)/stamped_groundtruth.txt" />
+             value="$(arg ground_truth_file)" />
       <param name="stamped_traj_file"
-             value="$(find tij_challenger)/performance/$(arg dataset)/stamped_traj_estimate.txt" />
+             value="$(arg output_file)" />
     </node>
   </group>
 
   <!-- OpenVSLAM with IMU integration using robot_localization -->
-  <group ns="OpenVSLAM_with_IMU" if="false">
+  <group ns="OpenVSLAM_with_IMU" if="true">
     <node pkg="openvslam_ros" type="run_slam" name="openvslam_odom"
           args="-v /home/metrics/data/orb_vocab.fbow -c $(find tij_challenger)/config/$(arg openvslam_config_file)"
           output="screen">
@@ -123,11 +134,11 @@
 
     <node pkg="tij_challenger" type="recorder.py" name="recorder" output="screen" required="true">
 
-      <param name="log_ground_truth" value="true" />
-      <param name="log_ground_truth" value="true" />
+      <param name="log_ground_truth" value="$(arg log_ground_truth)" />
+      <param name="log_stamped_traj" value="true" />
 
-      <param name="stamped_ground_truth_file" value="$(find tij_challenger)/performance/$(arg dataset)/stamped_groundtruth.txt" />
-      <param name="stamped_traj_file" value="$(find tij_challenger)/performance/$(arg dataset)/stamped_traj_estimate.txt" />
+      <param name="stamped_ground_truth_file" value="$(arg ground_truth_file)" />
+      <param name="stamped_traj_file" value="$(arg output_file)" />
     </node>
   </group>
 
@@ -147,17 +158,16 @@
 
     <node pkg="tij_challenger" type="recorder.py" name="recorder" output="screen" required="true">
 
-      <param name="log_ground_truth" value="true" />
-      <param name="log_ground_truth" value="true" />
+      <param name="log_ground_truth" value="$(arg log_ground_truth)" />
+      <param name="log_stamped_traj" value="true" />
 
-      <param name="stamped_ground_truth_file" value="$(find tij_challenger)/performance/$(arg dataset)/stamped_groundtruth.txt" />
-      <param name="stamped_traj_file" value="$(find tij_challenger)/performance/$(arg dataset)/stamped_traj_estimate.txt" />
+      <param name="stamped_ground_truth_file" value="$(arg ground_truth_file)" />
+      <param name="stamped_traj_file" value="$(arg output_file)" />
     </node>
   </group>
 
-
   <!-- RTABMap SLAM and sensor fusion -->
-  <group ns="RTABMap_SLAM" if="true">
+  <group ns="RTABMap_SLAM" if="false">
 
     <!-- RTABMap RGBD Odom, provides visual_odom to base_link transform -->
     <node pkg="rtabmap_ros" type="rgbd_odometry" name="rtabmap_rgbd_odom" output="screen">
@@ -255,14 +265,13 @@
       <param name="publish_tf" value="true" />
     </node> 
 
-
     <node pkg="tij_challenger" type="recorder.py" name="recorder" output="screen" required="true">
 
-      <param name="log_ground_truth" value="true" />
-      <param name="log_ground_truth" value="true" />
+      <param name="log_ground_truth" value="$(arg log_ground_truth)" />
+      <param name="log_stamped_traj" value="true" />
 
-      <param name="stamped_ground_truth_file" value="$(find tij_challenger)/performance/$(arg dataset)/stamped_groundtruth.txt" />
-      <param name="stamped_traj_file" value="$(find tij_challenger)/performance/$(arg dataset)/stamped_traj_estimate.txt" />
+      <param name="stamped_ground_truth_file" value="$(arg ground_truth_file)" />
+      <param name="stamped_traj_file" value="$(arg output_file)" />
     </node>
   </group>
 

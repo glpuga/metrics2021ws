@@ -17,7 +17,7 @@
 #
 #
 
-IMAGE_NAME="metrics2021_devel_env"
+IMAGE_NAME="metrics2021"
 
 xhost +
 CONTAINER_ID=$(docker ps -aqf "ancestor=${IMAGE_NAME}")

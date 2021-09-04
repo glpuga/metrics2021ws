@@ -1,13 +1,13 @@
 <launch>
 
-  <arg name="dataset" default="FBM1_flight1.bag" />
+  <arg name="bag_file" />
   <arg name="loop" default="false" />
 
   <arg if="$(eval loop==true)" name="loop_args" value="--loop" />
   <arg unless="$(eval loop==true)" name="loop_args" value="" />
 
   <node name="rosbag_replayer" pkg="rosbag" type="play" respawn="false"
-        args="--clock $(arg loop_args) $(find tij_challenger)/../../../dataset/$(arg dataset)"
+        args="--clock $(arg loop_args) $(arg bag_file)"
         output="screen" required="true" />
 
   <!-- scale depth data with the factor to correct measurements -->
