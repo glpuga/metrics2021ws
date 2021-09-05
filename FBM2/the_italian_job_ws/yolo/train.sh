@@ -1,7 +1,7 @@
 #!/bin/bash
 
-DATAFILE="cfg/metrics-rami.data"
-CFGFILE="cfg/yolov4-metrics-rami.cfg"
+DATAFILE="net/cfg/metrics-rami.data"
+CFGFILE="net/cfg/yolov4-metrics-rami.cfg"
 WEIGHTSFILE="/home/metrics/data/yolo/yolov4.conv.137"
 
 LASTWEIGHTS="backup/yolov4-metrics-rami_last.weights"
