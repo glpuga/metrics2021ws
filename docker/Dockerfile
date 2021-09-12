@@ -348,6 +348,14 @@ RUN cd train \
  && cd evaluation \
  && for oldname in `ls *.jpg.jpg`; do newname=`echo $oldname | sed 's/.jpg.jpg/.jpg/'`; mv $oldname $newname; done
 
+# Discard the evaluation dataset and subset the training subset into a new train/evaluation pair.
+# This is because the evaluation subset seems to have some serious errors in labeling.
+# Create new listing of the training and evaluation datasets
+COPY files/discard_evaluation_and_subset_train.sh ./
+RUN ./discard_evaluation_and_subset_train.sh \
+ && ls `pwd`/evaluation/*.jpg | sort > /home/${USER}/dataset_evaluation.txt \
+ && ls `pwd`/train/*.jpg | sort > /home/${USER}/dataset_training.txt
+
 # Create a file exchange folder. This is only a utility folder used during development to move files in and out
 # of the container.
 RUN /bin/sh -c 'mkdir -p ~/fileio'
