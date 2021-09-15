@@ -407,3 +407,38 @@ RUN cd ~/FBM2 \
  && ln -s ~/the_italian_job_ws/metrics2021ws/FBM2/the_italian_job_ws . \
  && cp the_italian_job_ws/the_italian_job_fbm2_launch.sh .
 
+
+
+#
+# Build third submission
+#
+
+FROM devel_environment AS third-submission
+
+# the build script changes this value everytime to force rebuilding this
+# section
+ARG NOCACHE_SUBMISSIONS=0
+
+ARG SUBMISSION=third-submission
+
+# copy the trained network for this release
+COPY trained_networks/${SUBMISSION} /home/metrics/data/yolo/net
+
+RUN echo "${SUBMISSION}" > ~/the_italian_job_submission.id
+
+RUN mkdir -p ~/the_italian_job_ws \
+ && cd ~/the_italian_job_ws \
+ && git clone https://github.com/glpuga/metrics2021ws.git \
+ && cd metrics2021ws \
+ && git checkout ${SUBMISSION}
+
+RUN cd ~/FBM1 \
+ && ln -s ~/the_italian_job_ws/metrics2021ws/FBM1/the_italian_job_ws . \
+ && cp the_italian_job_ws/the_italian_job_fbm1_launch.sh . \
+ && cd the_italian_job_ws \
+ && /bin/bash -c 'source /opt/ros/melodic/setup.bash && catkin_make'
+
+RUN cd ~/FBM2 \
+ && ln -s ~/the_italian_job_ws/metrics2021ws/FBM2/the_italian_job_ws . \
+ && cp the_italian_job_ws/the_italian_job_fbm2_launch.sh .
+
