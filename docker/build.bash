@@ -42,6 +42,11 @@ docker build \
         $IMAGE_NAME:latest &&
     echo "Built $TAGGED_IMAGE_NAME and tagged as $IMAGE_NAME:latest"
 
+if [[ $? -ne 0 ]]; then
+    echo "Error building image, aborting..."
+    exit
+fi
+
 #
 # Build releases
 #

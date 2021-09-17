@@ -338,22 +338,25 @@ RUN /bin/sh -c 'mkdir -p ~/data/yolo' \
  && cd ~/data/yolo \
  && curl -sL "https://github.com/AlexeyAB/darknet/releases/download/darknet_yolo_v3_optimal/yolov4.conv.137" -o yolov4.conv.137
 
-# Correct double-extension files in the dataset. 
-# Many of the files in the training dataset have the file extension repeated twice, in a way to the name of the image
-# does not match that of the txt file that accompanies it. The following section corrects that by renaming those files.
-WORKDIR /home/metrics/FBM2/dataset/crack_detection_dataset
-RUN cd train \
- && for oldname in `ls *.jpg.jpg`; do newname=`echo $oldname | sed 's/.jpg.jpg/.jpg/'`; mv $oldname $newname; done \
- && cd .. \
- && cd evaluation \
- && for oldname in `ls *.jpg.jpg`; do newname=`echo $oldname | sed 's/.jpg.jpg/.jpg/'`; mv $oldname $newname; done
+# # Correct double-extension files in the dataset. 
+# # Many of the files in the training dataset have the file extension repeated twice, in a way to the name of the image
+# # does not match that of the txt file that accompanies it. The following section corrects that by renaming those files.
+# WORKDIR /home/metrics/FBM2/dataset/crack_detection_dataset
+# RUN cd train \
+#  && for oldname in `ls *.jpg.jpg`; do newname=`echo $oldname | sed 's/.jpg.jpg/.jpg/'`; mv $oldname $newname; done \
+#  && cd .. \
+#  && cd evaluation \
+#  && for oldname in `ls *.jpg.jpg`; do newname=`echo $oldname | sed 's/.jpg.jpg/.jpg/'`; mv $oldname $newname; done
 
-# Discard the evaluation dataset and subset the training subset into a new train/evaluation pair.
-# This is because the evaluation subset seems to have some serious errors in labeling.
+# # Discard the evaluation dataset and subset the training subset into a new train/evaluation pair.
+# # This is because the evaluation subset seems to have some serious errors in labeling.
+# # Create new listing of the training and evaluation datasets
+# COPY files/discard_evaluation_and_subset_train.sh ./
+# RUN ./discard_evaluation_and_subset_train.sh
+
 # Create new listing of the training and evaluation datasets
-COPY files/discard_evaluation_and_subset_train.sh ./
-RUN ./discard_evaluation_and_subset_train.sh \
- && ls `pwd`/evaluation/*.jpg | sort > /home/${USER}/dataset_evaluation.txt \
+WORKDIR /home/metrics/FBM2/dataset/crack_detection_dataset_v2
+RUN ls `pwd`/evaluation/*.jpg | sort > /home/${USER}/dataset_evaluation.txt \
  && ls `pwd`/train/*.jpg | sort > /home/${USER}/dataset_training.txt
 
 # Create a file exchange folder. This is only a utility folder used during development to move files in and out
@@ -373,6 +376,7 @@ WORKDIR /home/$USER/
 ENTRYPOINT ["fixuid"]
 
 CMD ["/bin/bash"]
+
 
 #
 # Build first submission
@@ -406,7 +410,6 @@ RUN cd ~/FBM1 \
 RUN cd ~/FBM2 \
  && ln -s ~/the_italian_job_ws/metrics2021ws/FBM2/the_italian_job_ws . \
  && cp the_italian_job_ws/the_italian_job_fbm2_launch.sh .
-
 
 
 #
