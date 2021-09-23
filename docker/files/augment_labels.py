@@ -10,8 +10,8 @@ import sys
 #
 
 
-RATIO_THRESHOLD = 3
-AUGMENTATION_FACTOR = 10
+RATIO_THRESHOLD = 5
+AUGMENTATION_FACTOR = 3
 
 
 def load_labels_file(filepath):
@@ -54,8 +54,8 @@ def augment_data(data):
             continue
 
         for n in range(AUGMENTATION_FACTOR):
-            w_factor = random.random()
-            o_factor = random.random()
+            w_factor = random.random() * 0.5 + 0.49
+            o_factor = random.random() * 0.5 + 0.49
 
             adj_x1 = x1 + w * (1 - w_factor) * o_factor
             adj_y1 = y1
