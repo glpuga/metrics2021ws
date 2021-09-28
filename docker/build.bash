@@ -95,3 +95,19 @@ echo Building "$SUBMISSION..." &&
         $TAGGED_IMAGE_NAME \
         $IMAGE_NAME:$SUBMISSION &&
     echo "Built $TAGGED_IMAGE_NAME and tagged as $IMAGE_NAME:$SUBMISSION"
+
+
+# final-submission
+SUBMISSION="final-submission"
+echo Building "$SUBMISSION..." &&
+    docker build \
+        --target $SUBMISSION \
+        --build-arg NOCACHE_SUBMISSIONS=$(date +%s) \
+        --rm \
+        -t $TAGGED_IMAGE_NAME \
+        -f "$DOCKERFILE_PATH"/Dockerfile \
+        "$DOCKERFILE_PATH" &&
+    docker tag \
+        $TAGGED_IMAGE_NAME \
+        $IMAGE_NAME:$SUBMISSION &&
+    echo "Built $TAGGED_IMAGE_NAME and tagged as $IMAGE_NAME:$SUBMISSION"
