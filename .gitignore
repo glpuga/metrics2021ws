@@ -7,4 +7,5 @@ FBM1/the_italian_job_ws/.catkin_workspace
 !FBM1/the_italian_job_ws/backup/placeholder
 *.pyc
 *.png
+!images/frontpage.png
 *.weights
